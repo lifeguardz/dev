@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+filter=""
+dry="0"
+
+cd "$script_dir"
+
+if ! command -v brew >/dev/null 2>&1; then
+    log_install() {
+        if [[ "$dry" == "1" ]]; then
+            echo "[DRY_RUN]: Would install Homebrew"
+        else
+            echo "Installing Homebrew..."
+        fi
+    }
+
+    log_install
+    if [[ "$dry" != "1" ]]; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+fi
+
+scripts=$(find runs -type f -perm -u=x)
+
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "--dry" ]]; then
+        dry="1"
+    else
+        filter="$1"
+    fi
+    shift
+done
+
+log() {
+    if [[ $dry == "1" ]]; then
+        echo "[DRY_RUN]: $@"
+    else
+        echo "$@"
+    fi
+}
+
+execute() {
+    log "execute: $@"
+    if [[ $dry == "1" ]]; then
+        return
+    fi
+    "$@"
+}
+
+log "run: filter=$filter"
+
+for script in $scripts; do
+    if ! echo "$script" | grep -q "$filter"; then
+        log "filtered: $filter -- $script"
+        continue
+    fi
+    log "running script: $script"
+    execute "./$script"
+done

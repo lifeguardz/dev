@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+brew install --cask proton-drive
+brew install --cask proton-mail
+brew install --cask proton-pass
+brew install --cask protonvpn

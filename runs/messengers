@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+brew install --cask discord
+brew install --cask signal
+brew install --cask threema@beta
