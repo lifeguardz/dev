@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+brew install --cask affinity-designer
+brew install --cask affinity-photo
+brew install --cask affinity-publisher 

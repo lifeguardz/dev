@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+brew tap FelixKratz/formulae
+brew install sketchybar
+
+brew install --cask font-hack-nerd-font
+
+brew install --cask sf-symbols
+
+brew install gh
+
+brew install switchaudio-osx
+
+curl -L https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v1.0.23/sketchybar-app-font.ttf -o $HOME/Library/Fonts/sketchybar-app-font.ttf
+

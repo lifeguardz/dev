@@ -1,0 +1,4 @@
+[gcloud]
+format = '[$symbol$project]($style)'
+symbol = '☁️ '
+style = 'bright-blue'

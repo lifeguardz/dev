@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+brew install yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick font-symbols-only-nerd-font

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+brew install fnm 
+fnm completions --shell zsh

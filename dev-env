@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+DEV_ENV="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+dry_run="0"
+
+if [ -z "$HOME" ]; then
+    echo "no HOME env found"
+fi
+
+if [ -z "$DEV_ENV" ]; then
+    echo "env var DEV_ENV needs to be present"
+    exit 1
+fi
+
+if [[ $1 == "--dry" ]]; then
+    dry_run="1"
+fi
+
+log() {
+    if [[ $dry_run == "1" ]]; then
+        echo "[DRY_RUN]: $1"
+    else
+        echo "$1"
+    fi
+}
+
+log "env: $DEV_ENV"
+
+copy_directories_with_contents() {
+    log "copying directories with files from: $1"
+    pushd $1 &> /dev/null
+    (
+        configs=`find . -mindepth 1 -maxdepth 1 -type d`
+        for c in $configs; do
+            directory=${2%/}/${c#./}
+            log "    removing: rm -rf $directory"
+
+            if [[ $dry_run == "0" ]]; then
+                rm -rf $directory
+            fi
+
+            log "    copying env: cp $c $2"
+            if [[ $dry_run == "0" ]]; then
+                cp -r ./$c $2
+            fi
+        done
+
+    )
+    popd &> /dev/null
+}
+
+copy_top_level_files() {
+    log "copying files from: $1 to $2"
+    pushd $1 &> /dev/null
+
+    files=$(find . -maxdepth 1 -type f)
+
+    for file in $files; do
+        base_file=$(basename "$file")
+        dest_file="$2/$base_file"
+
+        dest_dir=$(dirname "$dest_file")
+
+        if [[ ! -d "$dest_dir" ]]; then
+            if [[ $dry_run == "0" ]]; then
+                mkdir -p "$dest_dir"
+                log "created directory: $dest_dir"
+            fi
+        fi
+
+        copy_file "$1/$base_file" "$dest_file"
+    done
+
+    popd &> /dev/null
+}
+
+copy_file() {
+    log "    removing: $2"
+    if [[ $dry_run == "0" ]]; then
+        rm $2
+    fi
+    log "    copying: $1 to $2"
+    if [[ $dry_run == "0" ]]; then
+        cp $1 $2
+    fi
+}
+
+copy_directories_with_contents $DEV_ENV/env/.config $HOME/.config
+
+copy_top_level_files $DEV_ENV/env/.config $HOME/.config
+
+log "copy other files"
+copy_file $DEV_ENV/env/.zshrc $HOME/.zshrc
+copy_file $DEV_ENV/env/.zshrc.local $HOME/.zshrc.local
+copy_file $DEV_ENV/env/.zprofile $HOME/.zprofile
+copy_file $DEV_ENV/env/.ideavimrc $HOME/.ideavimrc
